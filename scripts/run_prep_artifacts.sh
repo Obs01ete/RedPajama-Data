@@ -80,7 +80,7 @@ echo "Toal number of listings: $num_listings"
 # copy config to artifacts dir
 cp "$CONFIG_FILE" "${ARTIFACTS_DIR%/}/config.conf"
 
-# Reset artifacts dir on docker mounted volume
+# Reset artifacts dir on docker mounted volume # docker run
 ARTIFACTS_DIR="${DOCKER_MNT_DIR%/}/artifacts-${RUN_ID}"
 for lang in "${LANGUAGES[@]}"; do
   echo "__LANG_PREP_START__ ${lang} @ $(date)"
@@ -93,7 +93,6 @@ for lang in "${LANGUAGES[@]}"; do
     --cache_dir "${DOCKER_MNT_DIR%/}/.hf_cache" \
     --lang "${lang}" \
     --max_workers "${MAX_WORKERS}" \
-    --endpoint_url "$DOCKER_S3_ENDPOINT_URL" \
     --dsir_num_samples "${DSIR_NUM_SAMPLES}" \
     --dsir_feature_dim "${DSIR_FEATURE_DIM}" \
     --classifiers_num_samples "${CLASSIFIERS_NUM_SAMPLES}" \
@@ -101,9 +100,11 @@ for lang in "${LANGUAGES[@]}"; do
     --max_samples_per_book "${MAX_SAMPLES_PER_BOOK}"
   echo "__LANG_PREP_END__ ${lang} @ $(date)"
 done
+#    --endpoint_url "$DOCKER_S3_ENDPOINT_URL" \
 
+# docker run
 echo "__UPDATE_CONENTLISTS_START__ @ $(date)"
-docker run -v "${DATA_ROOT%/}":"${DOCKER_MNT_DIR%/}" -t "${DOCKER_REPO}" \
+echo -v "${DATA_ROOT%/}":"${DOCKER_MNT_DIR%/}" -t "${DOCKER_REPO}" \
   python3 src/artifacts/update_resources.py \
   --langs "${LANGUAGES[@]}" \
   --artifacts_dir "${ARTIFACTS_DIR%/}" \
